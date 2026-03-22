@@ -3,6 +3,8 @@ export enum StorageKeys {
   Password = "password"
 }
 
+export const API_BASE_URL = "https://localhost:7221";
+
 export enum ConnectionState {
   Disconnected,
   Reconnected
@@ -86,4 +88,21 @@ export interface Room {
   pinCode: string | null,
   joinedUsers: User[],
   currentRound?: number
+}
+
+export interface FriendSummary {
+  username: string,
+  isOnline: boolean,
+  currentRoomCode: string | null,
+  currentRoomName: string | null,
+  friendsSinceUtc: string
+}
+
+export interface FriendProfile {
+  username: string,
+  isOnline: boolean,
+  isFriend: boolean,
+  friendsCount: number,
+  currentRoomCode: string | null,
+  currentRoomName: string | null
 }

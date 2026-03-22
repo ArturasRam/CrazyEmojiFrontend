@@ -1,0 +1,47 @@
+<div class="friends-page">
+  <div class="friends-page__hero">
+    <div>
+      <h2>Friends</h2>
+      <p>Add friends, open their profile, or jump straight into their lobby.</p>
+    </div>
+    <div class="friends-page__add-box">
+      <input [(ngModel)]="friendUsername" placeholder="Enter username" (keyup.enter)="addFriend()" />
+      <button (click)="addFriend()">Add friend</button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="friends-page__empty">Loading friends...</div>
+  } @else if (friends.length === 0) {
+    <div class="friends-page__empty">No friends yet. Add someone by username to get started.</div>
+  } @else {
+    <div class="friends-grid">
+      @for (friend of friends; track friend.username) {
+        <div class="friend-card">
+          <div class="friend-card__top">
+            <div>
+              <h3>{{ friend.username }}</h3>
+              <span class="status" [class.online]="friend.isOnline">
+                {{ friend.isOnline ? 'Online' : 'Offline' }}
+              </span>
+            </div>
+            <span class="room-pill" [class.active]="!!friend.currentRoomCode">
+              {{ friend.currentRoomCode ? 'In lobby' : 'No lobby' }}
+            </span>
+          </div>
+
+          <div class="friend-card__body">
+            <div><strong>Lobby:</strong> {{ friend.currentRoomName || '—' }}</div>
+            <div><strong>Room code:</strong> {{ friend.currentRoomCode || '—' }}</div>
+          </div>
+
+          <div class="friend-card__actions">
+            <button class="secondary" (click)="viewProfile(friend)">Profile</button>
+            <button [disabled]="!friend.currentRoomCode" (click)="joinLobby(friend)">Join lobby</button>
+            <button class="danger" (click)="removeFriend(friend)">Unfriend</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
