@@ -2,46 +2,114 @@
   <div class="friends-page__hero">
     <div>
       <h2>Friends</h2>
-      <p>Add friends, open their profile, or jump straight into their lobby.</p>
+      <p>Send friend requests, approve them manually, open profiles, or jump straight into a lobby.</p>
     </div>
+
     <div class="friends-page__add-box">
       <input [(ngModel)]="friendUsername" placeholder="Enter username" (keyup.enter)="addFriend()" />
-      <button (click)="addFriend()">Add friend</button>
+
+      @if (friendUsername.trim() && hasOutgoingRequest(friendUsername.trim())) {
+      <button disabled>Request sent</button>
+      } @else {
+      <button (click)="addFriend()">Send request</button>
+      }
     </div>
   </div>
 
-  @if (loading) {
-    <div class="friends-page__empty">Loading friends...</div>
-  } @else if (friends.length === 0) {
-    <div class="friends-page__empty">No friends yet. Add someone by username to get started.</div>
-  } @else {
-    <div class="friends-grid">
-      @for (friend of friends; track friend.username) {
-        <div class="friend-card">
-          <div class="friend-card__top">
-            <div>
-              <h3>{{ friend.username }}</h3>
-              <span class="status" [class.online]="friend.isOnline">
-                {{ friend.isOnline ? 'Online' : 'Offline' }}
-              </span>
-            </div>
-            <span class="room-pill" [class.active]="!!friend.currentRoomCode">
-              {{ friend.currentRoomCode ? 'In lobby' : 'No lobby' }}
-            </span>
-          </div>
+  <section class="requests-section">
+    <div class="requests-section__header">
+      <h3>Incoming requests</h3>
+      <span>{{ incomingRequests.length }}</span>
+    </div>
 
-          <div class="friend-card__body">
-            <div><strong>Lobby:</strong> {{ friend.currentRoomName || '—' }}</div>
-            <div><strong>Room code:</strong> {{ friend.currentRoomCode || '—' }}</div>
-          </div>
-
-          <div class="friend-card__actions">
-            <button class="secondary" (click)="viewProfile(friend)">Profile</button>
-            <button [disabled]="!friend.currentRoomCode" (click)="joinLobby(friend)">Join lobby</button>
-            <button class="danger" (click)="removeFriend(friend)">Unfriend</button>
-          </div>
+    @if (loadingRequests) {
+    <div class="friends-page__empty">Loading requests...</div>
+    } @else if (incomingRequests.length === 0) {
+    <div class="friends-page__empty">No pending friend requests.</div>
+    } @else {
+    <div class="requests-grid">
+      @for (request of incomingRequests; track request.username) {
+      <div class="request-card">
+        <div>
+          <h4>{{ request.username }}</h4>
+          <span class="status" [class.online]="request.isOnline">
+            {{ request.isOnline ? 'Online' : 'Offline' }}
+          </span>
         </div>
+
+        <div class="request-card__actions">
+          <button (click)="acceptRequest(request)">Accept</button>
+          <button class="danger" (click)="declineRequest(request)">Decline</button>
+        </div>
+      </div>
       }
     </div>
+    }
+  </section>
+
+  <section class="requests-section">
+    <div class="requests-section__header">
+      <h3>Sent requests</h3>
+      <span>{{ outgoingRequests.length }}</span>
+    </div>
+
+    @if (loadingOutgoingRequests) {
+    <div class="friends-page__empty">Loading sent requests...</div>
+    } @else if (outgoingRequests.length === 0) {
+    <div class="friends-page__empty">No pending sent requests.</div>
+    } @else {
+    <div class="requests-grid">
+      @for (request of outgoingRequests; track request.username) {
+      <div class="request-card">
+        <div>
+          <h4>{{ request.username }}</h4>
+          <span class="status" [class.online]="request.isOnline">
+            {{ request.isOnline ? 'Online' : 'Offline' }}
+          </span>
+        </div>
+
+        <div class="request-card__actions">
+          <button disabled>Pending</button>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </section>
+
+  @if (loading) {
+  <div class="friends-page__empty">Loading friends...</div>
+  } @else if (friends.length === 0) {
+  <div class="friends-page__empty">No friends yet. Send a request and wait until it is accepted.</div>
+  } @else {
+  <div class="friends-grid">
+    @for (friend of friends; track friend.username) {
+    <div class="friend-card">
+      <div class="friend-card__top">
+        <div>
+          <h3>{{ friend.username }}</h3>
+          <span class="status" [class.online]="friend.isOnline">
+            {{ friend.isOnline ? 'Online' : 'Offline' }}
+          </span>
+        </div>
+
+        <span class="room-pill" [class.active]="!!friend.currentRoomCode">
+          {{ friend.currentRoomCode ? 'In lobby' : 'No lobby' }}
+        </span>
+      </div>
+
+      <div class="friend-card__body">
+        <div><strong>Lobby:</strong> {{ friend.currentRoomName || '—' }}</div>
+        <div><strong>Room code:</strong> {{ friend.currentRoomCode || '—' }}</div>
+      </div>
+
+      <div class="friend-card__actions">
+        <button class="secondary" (click)="viewProfile(friend)">Profile</button>
+        <button [disabled]="!friend.currentRoomCode" (click)="joinLobby(friend)">Join lobby</button>
+        <button class="danger" (click)="removeFriend(friend)">Unfriend</button>
+      </div>
+    </div>
+    }
+  </div>
   }
 </div>

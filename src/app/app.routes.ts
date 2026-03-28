@@ -8,39 +8,39 @@ import { FriendsPage } from './pages/friends-page/friends-page';
 import { FriendProfilePage } from './pages/friend-profile-page/friend-profile-page';
 
 export const routes: Routes = [
-    {
-        path: '',
-        title: 'Crazy Emoji',
-        component: HomePage
-    },
-    {
-        path: 'categories',
-        title: 'Categories',
-        component: CategoriesPage
-    },
-    {
-        path: 'room/waiting-room',
-        title: 'Waiting Room',
-        component: WaitingRoomPage
-    },
-    {
-        path: 'room/game-room',
-        title: 'Waiting Room',
-        component: GameRoomPage
-    },
-    {
-        path: 'friends',
-        title: 'Friends',
-        component: FriendsPage
-    },
-    {
-        path: 'friends/:username',
-        title: 'Friend Profile',
-        component: FriendProfilePage
-    },
-    {
-        path: 'playground',
-        title: 'Playground',
-        component: Playground
-    }
+  {
+    path: '',
+    title: 'Crazy Emoji',
+    component: HomePage
+  },
+  {
+    path: 'categories',
+    title: 'Categories',
+    component: CategoriesPage
+  },
+  {
+    path: 'room/waiting-room',
+    title: 'Waiting Room',
+    component: WaitingRoomPage
+  },
+  {
+    path: 'room/game-room',
+    title: 'Waiting Room',
+    component: GameRoomPage
+  },
+  {
+    path: 'friends',
+    title: 'Friends',
+    component: FriendsPage
+  },
+  {
+    path: 'friends/:username',
+    title: 'Friend Profile',
+    component: FriendProfilePage
+  },
+  {
+    path: 'playground',
+    title: 'Playground',
+    component: Playground
+  }
 ];

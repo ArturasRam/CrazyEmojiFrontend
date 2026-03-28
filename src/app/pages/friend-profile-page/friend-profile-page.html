@@ -1,30 +1,30 @@
 @if (profile) {
-  <div class="friend-profile-page">
-    <div class="friend-profile-card">
-      <div class="friend-profile-card__header">
-        <div>
-          <h2>{{ profile.username }}</h2>
-          <p>{{ profile.isOnline ? 'Currently online' : 'Currently offline' }}</p>
-        </div>
-        <span class="friend-badge">{{ profile.isFriend ? 'Friend' : 'Player' }}</span>
+<div class="friend-profile-page">
+  <div class="friend-profile-card">
+    <div class="friend-profile-card__header">
+      <div>
+        <h2>{{ profile.username }}</h2>
+        <p>{{ profile.isOnline ? 'Currently online' : 'Currently offline' }}</p>
       </div>
-
-      <div class="friend-profile-card__stats">
-        <div class="stat-box">
-          <span class="label">Friends</span>
-          <strong>{{ profile.friendsCount }}</strong>
-        </div>
-        <div class="stat-box">
-          <span class="label">Lobby</span>
-          <strong>{{ profile.currentRoomName || 'Not in a lobby' }}</strong>
-        </div>
-        <div class="stat-box">
-          <span class="label">Room code</span>
-          <strong>{{ profile.currentRoomCode || '—' }}</strong>
-        </div>
-      </div>
-
-      <button [disabled]="!profile.currentRoomCode" (click)="joinLobby()">Join this lobby</button>
+      <span class="friend-badge">{{ profile.isFriend ? 'Friend' : 'Player' }}</span>
     </div>
+
+    <div class="friend-profile-card__stats">
+      <div class="stat-box">
+        <span class="label">Friends</span>
+        <strong>{{ profile.friendsCount }}</strong>
+      </div>
+      <div class="stat-box">
+        <span class="label">Lobby</span>
+        <strong>{{ profile.currentRoomName || 'Not in a lobby' }}</strong>
+      </div>
+      <div class="stat-box">
+        <span class="label">Room code</span>
+        <strong>{{ profile.currentRoomCode || '—' }}</strong>
+      </div>
+    </div>
+
+    <button [disabled]="!profile.currentRoomCode" (click)="joinLobby()">Join this lobby</button>
   </div>
+</div>
 }
