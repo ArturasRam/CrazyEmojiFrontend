@@ -63,7 +63,7 @@
                     <i class="waiting-room-chat-icon fa-solid fa-comments"></i>
                 </div>
                 <div class="waiting-room-chat-messages">
-                    <ng-scrollbar [orientation]="'vertical'">
+                    <ng-scrollbar #chatScrollbar [orientation]="'vertical'">
                         <div class="waiting-room-chat-messages-list">
                             @for (chatMessage of chatMessages; track $index) {
                                 <div

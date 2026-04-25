@@ -76,10 +76,15 @@ export class Authentication {
   }
 
   rejoinRoomOnLogin():void {
-    if (this.roomService.currentRoom !== null) return;
     this.apiService.getCurrentUserData().subscribe(response => {
       if (response.success && response.data.roomCode !== '-1') {
-        this.roomService.joinRoom(response.data.roomCode);
+        const currentRoomCode = this.roomService.currentRoom?.pinCode;
+        if (currentRoomCode === response.data.roomCode) {
+          // Already in the right room locally — just rejoin the SignalR group
+          this.signalr.sendMessage(ApiEndpoints.JOIN_ROOM.SEND, response.data.roomCode);
+        } else {
+          this.roomService.joinRoom(response.data.roomCode);
+        }
       }
     });
   }

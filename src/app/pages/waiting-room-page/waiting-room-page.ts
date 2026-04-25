@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, inject, ViewChild, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavbarService } from '../../services/navbar-service';
 import { RoomService } from '../../services/room-service';
@@ -22,7 +22,7 @@ import { ApiService } from '../../services/api-service';
   templateUrl: './waiting-room-page.html',
   styleUrl: './waiting-room-page.scss'
 })
-export class WaitingRoomPage {
+export class WaitingRoomPage implements AfterViewChecked {
   private navbarService: NavbarService = inject(NavbarService);
   private signalr = inject(Signalr);
   private router = inject(Router);
@@ -31,8 +31,12 @@ export class WaitingRoomPage {
   private userService: UserService = inject(UserService);
   private alertService: AlertService = inject(AlertService);
   private apiService: ApiService = inject(ApiService);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+
+  @ViewChild('chatScrollbar') private chatScrollbar?: NgScrollbar;
   
   private gameStarted: boolean = false;
+  private shouldScrollToBottom: boolean = false;
 
   readonly ButtonSize = ButtonSize;
   readonly playIconLeft: ComponentIcon = {
@@ -44,6 +48,19 @@ export class WaitingRoomPage {
   chatMessages: LobbyMessagePayload[] = [];
   newMessage = '';
   authenticationService: Authentication = inject(Authentication);
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScrollToBottom) {
+      this.scrollChatToBottom();
+      this.shouldScrollToBottom = false;
+    }
+  }
+
+  private scrollChatToBottom(): void {
+    if (this.chatScrollbar) {
+      this.chatScrollbar.scrollTo({ bottom: 0, duration: 150 });
+    }
+  }
 
   ngOnInit() {
     if (!this.roomService.currentRoom) {
@@ -88,6 +105,18 @@ export class WaitingRoomPage {
     const message = this.newMessage.trim();
     if (!message) return;
 
+    const errorSub = this.signalr.listenToError(ApiEndpoints.SEND_LOBBY_MESSAGE.SEND)
+      .pipe(take(1))
+      .subscribe(errorCode => {
+        const errorMessage = ApiEndpoints.SEND_LOBBY_MESSAGE.ERRORS.find(e => e.CODE === errorCode)?.MESSAGE;
+        this.alertService.displayAlert({
+          type: AlertType.Error,
+          title: 'Failed To Send Message',
+          subtitle: errorMessage ?? 'Failed to send message. Please try again.',
+          timeout: 5000
+        });
+      });
+
     this.signalr.sendMessage(ApiEndpoints.SEND_LOBBY_MESSAGE.SEND, message);
     this.newMessage = '';
   }
@@ -97,6 +126,9 @@ export class WaitingRoomPage {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(message => {
         this.chatMessages.push(message);
+        this.chatMessages = [...this.chatMessages];
+        this.shouldScrollToBottom = true;
+        this.cdr.detectChanges();
       });
   }
 
