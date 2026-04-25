@@ -1,4 +1,5 @@
 import { Component, DestroyRef, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NavbarService } from '../../services/navbar-service';
 import { RoomService } from '../../services/room-service';
 import { Button } from "../../components/button/button";
@@ -9,7 +10,7 @@ import { NgScrollbar } from "ngx-scrollbar";
 import { Router } from '@angular/router';
 import { Signalr } from '../../services/signalr';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ApiEndpoints } from '../../../apiEndpoints';
+import { ApiEndpoints, LobbyMessagePayload } from '../../../apiEndpoints';
 import { Authentication } from '../../services/authentication';
 import { UserService } from '../../services/user-service';
 import { AlertService } from '../../services/alert-service';
@@ -17,7 +18,7 @@ import { ApiService } from '../../services/api-service';
 
 @Component({
   selector: 'app-waiting-room-page',
-  imports: [Button, UserBadge, NgScrollbar],
+  imports: [Button, UserBadge, NgScrollbar, FormsModule],
   templateUrl: './waiting-room-page.html',
   styleUrl: './waiting-room-page.scss'
 })
@@ -40,6 +41,8 @@ export class WaitingRoomPage {
   }
 
   room!: Room;
+  chatMessages: LobbyMessagePayload[] = [];
+  newMessage = '';
   authenticationService: Authentication = inject(Authentication);
 
   ngOnInit() {
@@ -52,6 +55,7 @@ export class WaitingRoomPage {
     this.listenToGameStart();
     this.listenToGameEnd();
     this.listenToPlayersActivity();
+    this.listenToLobbyChat();
   }
 
   ngOnDestroy() {
@@ -73,6 +77,26 @@ export class WaitingRoomPage {
             timeout: 7000
           });
         }
+      });
+  }
+
+  get canSendMessage(): boolean {
+    return !!this.newMessage.trim();
+  }
+
+  sendLobbyMessage(): void {
+    const message = this.newMessage.trim();
+    if (!message) return;
+
+    this.signalr.sendMessage(ApiEndpoints.SEND_LOBBY_MESSAGE.SEND, message);
+    this.newMessage = '';
+  }
+
+  private listenToLobbyChat(): void {
+    this.signalr.listen<LobbyMessagePayload>(ApiEndpoints.LOBBY_MESSAGE_RECEIVED.RECIEVE)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(message => {
+        this.chatMessages.push(message);
       });
   }
 

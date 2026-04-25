@@ -44,17 +44,55 @@
                 <i class="waiting-room-joined-users-counter-icon fa-solid fa-users"></i>
             </div>
         </div>
-        <div class="waiting-room-joined-users-container">
-            <ng-scrollbar [orientation]="'vertical'">
-                <div class="waiting-room-joined-users">
-                    @for (user of room.joinedUsers; track user) {
-                        <app-user-badge [user]="user" [clickable]="false"></app-user-badge>
-                    }
-                    @if (!room.joinedUsers.length) {
-                        <span class="waiting-room-joined-users-no-users">Waiting for players to join...</span>
-                    }
+        <div class="waiting-room-content">
+            <div class="waiting-room-joined-users-container">
+                <ng-scrollbar [orientation]="'vertical'">
+                    <div class="waiting-room-joined-users">
+                        @for (user of room.joinedUsers; track user) {
+                            <app-user-badge [user]="user" [clickable]="false"></app-user-badge>
+                        }
+                        @if (!room.joinedUsers.length) {
+                            <span class="waiting-room-joined-users-no-users">Waiting for players to join...</span>
+                        }
+                    </div>
+                </ng-scrollbar>
+            </div>
+            <div class="waiting-room-chat">
+                <div class="waiting-room-chat-header">
+                    <span class="waiting-room-chat-title">Lobby Chat</span>
+                    <i class="waiting-room-chat-icon fa-solid fa-comments"></i>
                 </div>
-            </ng-scrollbar>
+                <div class="waiting-room-chat-messages">
+                    <ng-scrollbar [orientation]="'vertical'">
+                        <div class="waiting-room-chat-messages-list">
+                            @for (chatMessage of chatMessages; track $index) {
+                                <div
+                                    class="waiting-room-chat-message"
+                                    [class.own]="authenticationService.currentUser && chatMessage.username === authenticationService.currentUser.username">
+                                    <span class="waiting-room-chat-message-author">{{ chatMessage.username }}</span>
+                                    <span class="waiting-room-chat-message-text">{{ chatMessage.message }}</span>
+                                </div>
+                            }
+                            @if (!chatMessages.length) {
+                                <span class="waiting-room-chat-empty">Say hi to the lobby 👋</span>
+                            }
+                        </div>
+                    </ng-scrollbar>
+                </div>
+                <form class="waiting-room-chat-form" (ngSubmit)="sendLobbyMessage()">
+                    <input
+                        class="waiting-room-chat-input"
+                        type="text"
+                        name="lobbyMessage"
+                        maxlength="250"
+                        autocomplete="off"
+                        placeholder="Type a message..."
+                        [(ngModel)]="newMessage">
+                    <button class="waiting-room-chat-send" type="submit" [disabled]="!canSendMessage">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
         </div>
         @if (room.creator === authenticationService.currentUser) {
             <div class="waiting-room-footer">

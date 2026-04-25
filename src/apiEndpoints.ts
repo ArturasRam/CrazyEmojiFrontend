@@ -19,6 +19,12 @@ export interface RoundResultsPayload {
     gameScore: number
 };
 
+export interface LobbyMessagePayload {
+    username: string,
+    message: string,
+    sentAtUtc: string
+};
+
 export const ApiEndpoints = {
     SIGN_UP: {
         SEND: "createUser",
@@ -215,6 +221,19 @@ export const ApiEndpoints = {
     },
     ROUND_STARTED: {
         RECIEVE: "roundStarted",
+        ERRORS: []
+    },
+    SEND_LOBBY_MESSAGE: {
+        SEND: "sendLobbyMessage",
+        ERRORS: [
+            {
+                CODE: "FORBIDDEN",
+                MESSAGE: "You must be inside a lobby to send messages."
+            }
+        ]
+    },
+    LOBBY_MESSAGE_RECEIVED: {
+        RECIEVE: "lobbyMessageReceived",
         ERRORS: []
     },
     ERROR: {
